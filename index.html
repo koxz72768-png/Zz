@@ -1109,5 +1109,79 @@ setInterval(()=>{if(isAdm())addTabs()},800);
 })();
 </script>
 
+<script id="velora-sync">
+(function(){
+const SB="https://mpdkbbpzukvvfqwpnivb.supabase.co",KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wZGtiYnB6dWt2dmZxd3BuaXZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyNTcxNDMsImV4cCI6MjEwOTgzMzE0M30.8lcxid5-dwy-dkjbhu9nv0Lfmwna1X5guHPtwDZCr6s";
+const CK="velora-store-v3",VK="velora-v6-data",TSK="velora-sync-ts",DK="velora-sync-dirty",MAP={catalog:CK,v6:VK};
+const tok=()=>{try{return JSON.parse(sessionStorage.getItem("velora-sbt"))}catch(e){return null}};
+const rd=k=>{try{return JSON.parse(localStorage.getItem(k))||{}}catch(e){return{}}};
+const _set=Storage.prototype.setItem;let mute=false;
+const wr=(k,v)=>_set.call(localStorage,k,typeof v==="string"?v:JSON.stringify(v));
+const setTs=(k,v)=>{const m=rd(TSK);m[k]=v;wr(TSK,m)},setDirty=(k,v)=>{const m=rd(DK);if(v)m[k]=1;else delete m[k];wr(DK,m)};
+async function api(p,o={}){const t=tok(),r=await fetch(SB+p,{method:o.m||"GET",headers:Object.assign({apikey:KEY,Authorization:"Bearer "+((t&&t.access_token)||KEY),"Content-Type":"application/json"},o.h||{}),body:o.b?JSON.stringify(o.b):undefined});if(!r.ok)throw new Error(await r.text());const x=await r.text();return x?JSON.parse(x):null}
+async function push(key){
+ if(!tok())return false;
+ try{const data=JSON.parse(localStorage.getItem(MAP[key])),ts=Date.now();
+  await api("/rest/v1/store?on_conflict=key",{m:"POST",h:{Prefer:"resolution=merge-duplicates,return=minimal"},b:{key,data,ts}});
+  setTs(key,ts);setDirty(key,false);return true}catch(e){setDirty(key,true);toast("تعذر رفع التعديل للقاعدة");return false}
+}
+let timers={},warned=false;
+Storage.prototype.setItem=function(k,v){
+ _set.call(this,k,v);
+ if(this!==localStorage||mute)return;
+ const key=k===CK?"catalog":k===VK?"v6":null;if(!key)return;
+ setDirty(key,true);
+ if(tok()){clearTimeout(timers[key]);timers[key]=setTimeout(()=>push(key),900)}
+ else if(!warned&&typeof isAdm==="function"&&isAdm()){warned=true;toast("التعديل محفوظ على جهازك فقط. سجّلي دخول الإدارة من تبويب الطلبات ليظهر للعملاء")}
+};
+function applyCatalog(d){
+ mute=true;wr(CK,d);mute=false;
+ OV.e=d.e||{};OV.a=Array.isArray(d.a)?d.a:[];
+ PRODUCTS.forEach(p=>Object.assign(p,OV.e[p.id]||{}));
+ OV.a.forEach(p=>{const old=PRODUCTS.find(x=>String(x.id)===String(p.id));if(old)Object.assign(old,p);else PRODUCTS.push(p)});
+ try{renderCats();renderGrid()}catch(e){}
+}
+async function pull(){
+ let meta;try{meta=await api("/rest/v1/store?select=key,ts")}catch(e){return}
+ const m=rd(TSK),dirty=rd(DK),adm=!!tok();
+ for(const r of meta||[]){
+  if(dirty[r.key]||r.ts<=(m[r.key]||0))continue;
+  if(r.key==="v6"&&!adm)continue;
+  try{const [row]=await api("/rest/v1/store?select=data&key=eq."+r.key);if(!row)continue;
+   if(r.key==="catalog"){applyCatalog(row.data);setTs("catalog",r.ts)}
+   else{mute=true;wr(VK,row.data);mute=false;setTs("v6",r.ts);if(!sessionStorage.getItem("velora-v6r")){sessionStorage.setItem("velora-v6r","1");location.reload()}}
+  }catch(e){}
+ }
+}
+pull();document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
+/* تبويب المزامنة في لوحة التحكم */
+const sec=(id,html)=>{let e=document.getElementById("v6-"+id);if(!e){e=document.createElement("div");e.id="v6-"+id;e.className="v6-section";document.querySelector(".v6-panel").appendChild(e)}e.innerHTML=html};
+const dtt=x=>x?new Date(+x).toLocaleString("ar-EG"):"—";
+async function render(){
+ const m=rd(TSK),d=rd(DK),on=!!tok();
+ sec("sync",`<h3>🔄 مزامنة المتجر مع القاعدة</h3><div class="v6-note">المنتجات والأسعار والمخزون بتتحفظ في القاعدة وتظهر للعملاء فورًا من غير رفع ملف. المخزون بينقص تلقائيًا مع كل طلب.</div>
+ <div class="v6-list"><div class="v6-row"><span>تسجيل دخول القاعدة</span><span class="v6-pill">${on?"مسجّلة ✓":"غير مسجّلة"}</span></div>
+ <div class="v6-row"><span>آخر مزامنة للمنتجات</span><span>${dtt(m.catalog)}</span></div>
+ <div class="v6-row"><span>تعديلات لم تُرفع</span><span>${Object.keys(d).length?"يوجد":"لا"}</span></div></div>
+ ${on?`<button class="v6-btn gold" data-v9="up" style="margin-top:12px">⬆️ رفع بيانات المتجر الحالية للقاعدة</button> <button class="v6-btn" data-v9="down" style="margin-top:12px">⬇️ سحب من القاعدة</button>`:`<div class="v6-note" style="margin-top:12px">سجّلي دخول Supabase الأول من تبويب «الطلبات والرسائل»، وبعدها ارجعي هنا.</div><button class="v6-btn" data-v9="re" style="margin-top:8px">تحديث الحالة</button>`}`);
+}
+function addTab(){
+ const tabs=document.querySelector(".v6-tabs");if(!tabs||tabs.dataset.v9)return;tabs.dataset.v9=1;
+ const b=document.createElement("button");b.className="v6-tab";b.dataset.v6="sync";b.textContent="🔄 المزامنة";tabs.appendChild(b);render();
+ b.addEventListener("click",()=>{document.querySelectorAll(".v6-tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".v6-section").forEach(x=>x.classList.remove("on"));b.classList.add("active");render();document.getElementById("v6-sync").classList.add("on")});
+}
+document.addEventListener("click",async e=>{
+ const b=e.target.closest("[data-v9]");if(!b||!isAdm())return;const k=b.dataset.v9;
+ if(k==="re")render();
+ else if(k==="up"){
+  PRODUCTS.forEach(p=>{if(p.st==null)setF(p,"st",stock(p))});saveOv();
+  if(!localStorage.getItem(VK))wr(VK,{inventory:{},flash:[],campaigns:[],home:{}});
+  const a=await push("catalog"),c=await push("v6");render();toast(a&&c?"تم رفع المتجر للقاعدة ✓":"حصلت مشكلة في الرفع، جرّبي تاني")}
+ else if(k==="down"&&confirm("هيستبدل بيانات جهازك ببيانات القاعدة. متأكدة؟")){setTs("catalog",0);setTs("v6",0);setDirty("catalog",false);setDirty("v6",false);sessionStorage.removeItem("velora-v6r");await pull();render();toast("تم السحب من القاعدة")}
+});
+setInterval(()=>{if(typeof isAdm==="function"&&isAdm())addTab()},800);
+})();
+</script>
+
 </body>
 </html>
