@@ -1134,12 +1134,18 @@ Storage.prototype.setItem=function(k,v){
  if(tok()){clearTimeout(timers[key]);timers[key]=setTimeout(()=>push(key),900)}
  else if(!warned&&typeof isAdm==="function"&&isAdm()){warned=true;toast("التعديل محفوظ على جهازك فقط. سجّلي دخول الإدارة من تبويب الطلبات ليظهر للعملاء")}
 };
+function applyCats(d){
+ if(!d||!Array.isArray(d.cats)||!d.cats.length)return;
+ d.cats.forEach(c=>{EM[c.n]=c.e||"✨";if(c.sz&&c.sz.length)SIZES[c.n]=c.sz;else delete SIZES[c.n]});
+ const names=d.cats.map(c=>c.n);PRODUCTS.forEach(p=>{if(!names.includes(p.c))names.push(p.c)});
+ cats.length=0;cats.push("الكل","♥ المفضلة",...names);const el=$("#cats");if(el)el.innerHTML="";
+}
 function applyCatalog(d){
  mute=true;wr(CK,d);mute=false;
  OV.e=d.e||{};OV.a=Array.isArray(d.a)?d.a:[];
  PRODUCTS.forEach(p=>Object.assign(p,OV.e[p.id]||{}));
  OV.a.forEach(p=>{const old=PRODUCTS.find(x=>String(x.id)===String(p.id));if(old)Object.assign(old,p);else PRODUCTS.push(p)});
- try{renderCats();renderGrid()}catch(e){}
+ applyCats(d);try{renderCats();renderGrid()}catch(e){}
 }
 async function pull(){
  let meta;try{meta=await api("/rest/v1/store?select=key,ts")}catch(e){return}
@@ -1153,6 +1159,8 @@ async function pull(){
   }catch(e){}
  }
 }
+try{const L=JSON.parse(localStorage.getItem(CK));if(L&&L.cats){applyCats(L);renderCats();renderGrid()}}catch(e){}
+const ab=document.getElementById("adm");if(ab)ab.addEventListener("click",e=>{e.stopImmediatePropagation();e.preventDefault();location.href="admin.html"},true);
 pull();document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
 /* تبويب المزامنة في لوحة التحكم */
 const sec=(id,html)=>{let e=document.getElementById("v6-"+id);if(!e){e=document.createElement("div");e.id="v6-"+id;e.className="v6-section";document.querySelector(".v6-panel").appendChild(e)}e.innerHTML=html};

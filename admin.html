@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>VELORA | لوحة الإدارة</title>
+<style>
+:root{--bg:#0e0d0b;--cd:#171510;--ln:#3b3222;--ink:#f4efe6;--mu:#9a9080;--g:#d4af37;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,Tahoma,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{position:sticky;top:0;z-index:5;background:#0b0a08;border-bottom:1px solid var(--ln);padding:10px 12px}
+header h1{margin:0 0 8px;font-size:17px;color:var(--g);display:flex;justify-content:space-between;align-items:center}header h1 a,header h1 button{font-size:13px;color:var(--mu);background:none;border:0;text-decoration:none}
+nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}nav button{flex:none;padding:8px 12px;border:1px solid var(--ln);background:none;color:var(--ink);border-radius:20px;font:inherit;font-size:14px}nav button.on{background:var(--g);color:#111;border-color:var(--g);font-weight:700}
+main{padding:12px;max-width:760px;margin:auto}
+input,select,textarea{width:100%;background:#0b0a08;color:var(--ink);border:1px solid var(--ln);border-radius:10px;padding:10px;font:inherit;margin-top:4px}
+label{display:block;color:var(--mu);font-size:13px;margin-top:10px}.row{display:flex;gap:8px;align-items:end}.row>*{flex:1}
+.b{padding:10px 14px;border:1px solid var(--ln);background:none;color:var(--ink);border-radius:10px;font:inherit;cursor:pointer;text-align:center;display:inline-block}.b.g{background:var(--g);color:#111;border-color:var(--g);font-weight:700}.b.w{width:100%;margin:10px 0}
+.it{display:flex;gap:10px;align-items:center;background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:8px;margin-top:8px;cursor:pointer}.it>div{flex:1;min-width:0}.it small{display:block;color:var(--mu)}
+.th{width:52px;height:52px;border-radius:8px;object-fit:cover;background:#0b0a08;display:grid;place-items:center;font-size:24px;flex:none}
+.cd{background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:12px;margin-top:10px}.gr{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gr .cd{margin:0}.gr strong{display:block;font-size:19px;color:var(--g)}
+.bad{color:#ff8d8d}.ok{color:#8fe0b5}.sh{position:fixed;inset:0;background:#000c;z-index:20;display:flex;align-items:flex-end}.sh>div{background:var(--bg);border-top:1px solid var(--g);width:100%;max-height:92vh;overflow:auto;padding:14px;border-radius:18px 18px 0 0;max-width:760px;margin:auto}
+.ck{display:flex;gap:8px;align-items:center}.ck input{width:auto;margin:0}.im{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.im div{position:relative}.im img{width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--ln)}.im button{position:absolute;top:-6px;inset-inline-start:-6px;border-radius:50%;border:0;background:#c33;color:#fff;width:22px;height:22px}
+.bars{display:flex;gap:6px;align-items:end;height:110px;margin-top:10px}.bars div{flex:1;text-align:center;font-size:11px;color:var(--mu)}.bars i{display:block;background:var(--g);margin-bottom:3px}
+#t{position:fixed;bottom:20px;inset-inline:16px;background:#111;border:1px solid var(--g);padding:12px;border-radius:12px;z-index:30;display:none;text-align:center}
+</style></head><body><div id="app"></div><div id="t"></div>
+<script>
+(function(){
+const SB="https://mpdkbbpzukvvfqwpnivb.supabase.co",KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wZGtiYnB6dWt2dmZxd3BuaXZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyNTcxNDMsImV4cCI6MjEwOTgzMzE0M30.8lcxid5-dwy-dkjbhu9nv0Lfmwna1X5guHPtwDZCr6s";
+const BASE=[[1,"خاتم لؤلؤ ناعم","خواتم",450,600,"💍"],[2,"خاتم ذهبي مرصّع","خواتم",720,0,"💍"],[3,"حلق دائري ذهبي","حلقان",380,0,"✨"],[4,"حلق لؤلؤ متدلّي","حلقان",520,650,"🦪"],[5,"حلق فراشة","حلقان",310,0,"🦋"],[6,"سلسلة قلب رفيعة","سلاسل",590,0,"🤍"],[7,"سلسلة حرف اسمك","سلاسل",650,0,"🔤"],[8,"عقد طبقات","سلاسل",880,1100,"📿"],[9,"إسورة ستانلس مفتوحة","أساور",420,0,"⭕"],[10,"إسورة خرز ملوّن","أساور",260,0,"🧿"],[11,"طقم أساور ناعمة","أساور",690,0,"🌟"],[12,"ساعة نسائية رفيعة","ساعات",1450,1800,"⌚"],[13,"ساعة ذهبي وردي","ساعات",1650,0,"⌚"],[14,"شنطة كتف صغيرة","شنط",1250,0,"👜"],[15,"كلتش سهرة","شنط",980,1200,"👛"],[16,"توكة شعر ساتان","إكسسوارات شعر",120,0,"🎀"],[17,"طقم ربّاطات شعر","إكسسوارات شعر",90,0,"🌸"],[18,"أسـتـيـك كلاسيك","إكسسوارات شعر",150,0,"🪮"]];
+const DEF=[{n:"خواتم",e:"💍",sz:["15","16","17","18","19"]},{n:"حلقان",e:"✨",sz:[]},{n:"سلاسل",e:"📿",sz:["40 سم","45 سم","50 سم"]},{n:"أساور",e:"⭕",sz:["S","M","L"]},{n:"ساعات",e:"⌚",sz:[]},{n:"شنط",e:"👜",sz:[]},{n:"إكسسوارات شعر",e:"🎀",sz:[]}];
+const ST0={5:0,13:0,2:3,15:2},ST=["تم استلام الطلب","تم التأكيد","تم الشحن","تم التسليم"];
+const TN={conf:"تأكيد",ship:"شحن",deliv:"تسليم",rev:"طلب تقييم"},TPL0={conf:"أهلًا {name} 💛\nتم تأكيد طلبك {no} من VELORA بإجمالي {total}.\nتابعي حالته من هنا: {link}",ship:"أهلًا {name} 🚚\nطلبك {no} اتشحن وفي الطريق ليكي.\nتتبّعيه من هنا: {link}",deliv:"أهلًا {name} ✨\nطلبك {no} وصل. نتمنى القطعة تعجبك!\n{link}",rev:"أهلًا {name} 💛\nيهمنا رأيك في طلبك {no}. شاركينا تقييمك وصورة القطعة من صفحة المنتج:\n{site}"};
+const $=s=>document.querySelector(s),j=JSON.stringify,esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const fmt=n=>Math.round(+n||0).toLocaleString("ar-EG")+" ج.م",dt=x=>new Date(+x).toLocaleDateString("ar-EG",{day:"numeric",month:"long"}),nd=s=>String(s).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).trim();
+let tok=null,D,OR=[],RR=[],tab="p",cur=null;try{tok=JSON.parse(sessionStorage.getItem("velora-sbt"))}catch(e){}
+const toast=m=>{const t=$("#t");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",2800)};
+async function api(p,o={},retry=1){
+ const r=await fetch(SB+p,{method:o.m||"GET",headers:Object.assign({apikey:KEY,Authorization:"Bearer "+((tok&&tok.access_token)||KEY),"Content-Type":"application/json"},o.h||{}),body:o.b?j(o.b):undefined});
+ if(r.status===401&&retry&&tok&&tok.refresh_token){try{tok=await api("/auth/v1/token?grant_type=refresh_token",{m:"POST",b:{refresh_token:tok.refresh_token}},0);sessionStorage.setItem("velora-sbt",j(tok));return api(p,o,0)}catch(e){tok=null;sessionStorage.removeItem("velora-sbt");boot();throw e}}
+ if(!r.ok)throw new Error(await r.text());const t=await r.text();return t?JSON.parse(t):null}
+const MIN={Prefer:"return=minimal"};
+async function loadDoc(){const r=await api("/rest/v1/store?select=data&key=eq.catalog");D=Object.assign({e:{},a:[],cats:null},(r&&r[0]&&r[0].data)||{});let ch=!(r&&r[0]);
+ if(!Array.isArray(D.cats)||!D.cats.length){D.cats=JSON.parse(j(DEF));ch=true}
+ BASE.forEach(([id])=>{const x=D.e[id]=D.e[id]||{};if(x.st==null){x.st=ST0[id]??10;ch=true}});return ch}
+const save=()=>{const ts=Date.now();return api("/rest/v1/store?on_conflict=key",{m:"POST",h:{Prefer:"resolution=merge-duplicates,return=minimal"},b:{key:"catalog",data:Object.assign({},D,{updatedAt:ts}),ts}})};
+async function mutate(fn){try{await loadDoc();fn();await save();toast("تم الحفظ وظهر للعملاء ✓");$("#sh")&&$("#sh").remove();render()}catch(e){toast("تعذر الحفظ: "+String(e.message).slice(0,70))}}
+const prods=()=>[...BASE.map(([id,n,c,p,o,e])=>Object.assign({id,n,c,p,o,e},D.e[id]||{})),...D.a];
+const catOf=n=>D.cats.find(c=>c.n===n)||{};
+/* دخول */
+function boot(){tok?start():$("#app").innerHTML=`<main><h2 style="color:var(--g)">VELORA — لوحة الإدارة</h2><div class="cd"><label>الإيميل<input id="le" type="email" autocomplete="username"></label><label>كلمة المرور<input id="lw" type="password" autocomplete="current-password"></label><button class="b g w" data-a="in">دخول</button></div></main>`}
+async function start(){$("#app").innerHTML=`<main>جاري التحميل…</main>`;try{const ch=await loadDoc();if(ch)await save();[OR,RR]=await Promise.all([api("/rest/v1/orders?select=*&order=ts.desc&limit=300"),api("/rest/v1/reviews?select=*&order=ts.desc&limit=200")]);render()}catch(e){$("#app").innerHTML=`<main><p class="bad">تعذر التحميل. تأكدي من تنفيذ ملفات SQL.</p><button class="b w" data-a="out">رجوع</button></main>`}}
+const TABS=[["p","📦 المنتجات"],["c","🗂 الأقسام"],["o","🧾 الطلبات"],["r","📑 التقارير"],["v","⭐ التقييمات"],["m","✉️ الرسائل"]];
+function render(){$("#app").innerHTML=`<header><h1><span>VELORA · الإدارة</span><span><a href="./">المتجر</a> · <button data-a="out">خروج</button></span></h1><nav>${TABS.map(([k,t])=>`<button data-a="tab" data-k="${k}" class="${k===tab?"on":""}">${t}</button>`).join("")}</nav></header><main id="v">${({p:vP,c:vC,o:vO,r:vR,v:vV,m:vM})[tab]()}</main>`;if(tab==="p")pList()}
+/* المنتجات */
+const vP=()=>`<div class="row"><input id="sq" placeholder="بحث باسم المنتج"><select id="sf"><option value="">كل الأقسام</option>${D.cats.map(c=>`<option>${esc(c.n)}</option>`).join("")}</select></div><button class="b g w" data-a="ep" data-id="0">+ منتج جديد</button><div id="pl"></div>`;
+function pList(){const q=($("#sq").value||"").trim(),f=$("#sf").value,L=prods().filter(p=>(!f||p.c===f)&&String(p.n).includes(q));
+ $("#pl").innerHTML=L.map(p=>`<div class="it" data-a="ep" data-id="${p.id}">${p.img&&p.img[0]?`<img class="th" src="${p.img[0]}" alt="">`:`<span class="th">${esc(p.e||"✨")}</span>`}<div><b>${esc(p.n)}</b><small>${esc(p.c)} · ${fmt(p.p)}${p.o?" (قبل: "+fmt(p.o)+")":""}</small></div><div style="flex:none;text-align:left"><span class="${p.st<1?"bad":p.st<=3?"bad":"ok"}">${p.st<1?"نفد":"مخزون "+p.st}</span>${p.hide?`<small>مخفي</small>`:""}</div></div>`).join("")||`<div class="cd">لا توجد منتجات.</div>`}
+function sheet(h){const e=document.createElement("div");e.id="sh";e.className="sh";e.innerHTML=`<div>${h}</div>`;document.body.appendChild(e)}
+function edit(id){const p=id?prods().find(x=>x.id==id):{id:0,n:"",c:D.cats[0].n,p:0,o:0,st:10,img:[]};cur=Object.assign({},p,{img:[...(p.img||[])]});
+ sheet(`<h3 style="margin:0">${id?"تعديل المنتج":"منتج جديد"}</h3><label>الاسم<input id="fn" value="${esc(p.n)}"></label><label>القسم<select id="fc">${D.cats.map(c=>`<option${c.n===p.c?" selected":""}>${esc(c.n)}</option>`).join("")}</select></label>
+ <div class="row"><label>السعر<input id="fp" type="number" min="0" value="${p.p}"></label><label>قبل الخصم<input id="fo" type="number" min="0" value="${p.o||""}"></label><label>الكمية<input id="fs" type="number" min="0" value="${p.st}"></label></div>
+ <label>مقاسات خاصة بالمنتج (فاضي = مقاسات القسم)<input id="fz" value="${esc((p.sz||[]).join("، "))}"></label><label class="ck"><input id="fh" type="checkbox"${p.hide?" checked":""}> إخفاء من المتجر</label>
+ <div class="im" id="fi"></div><label class="b w" style="color:var(--ink)">+ إضافة صور<input id="ff" type="file" accept="image/*" multiple hidden></label>
+ <div class="row"><button class="b g" data-a="sp">حفظ</button>${id>100?`<button class="b" data-a="dp">حذف</button>`:""}<button class="b" data-a="x">إلغاء</button></div>`);imgs()}
+const imgs=()=>{$("#fi").innerHTML=cur.img.map((s,i)=>`<div><img src="${s}" alt="" ${i?`data-a="mi" data-i="${i}"`:""}><button data-a="ri" data-i="${i}">✕</button></div>`).join("")+(cur.img.length>1?`<small style="width:100%;color:var(--mu)">اضغطي على صورة لتبقى الرئيسية</small>`:"")};
+const shrink=f=>new Promise(r=>{const fr=new FileReader;fr.onload=()=>{const i=new Image;i.onload=()=>{const k=Math.min(1,700/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*k;c.height=i.height*k;c.getContext("2d").drawImage(i,0,0,c.width,c.height);r(c.toDataURL("image/jpeg",.75))};i.onerror=()=>r("");i.src=fr.result};fr.onerror=()=>r("");fr.readAsDataURL(f)});
+function saveP(){const n=$("#fn").value.trim();if(!n){toast("اكتبي اسم المنتج");return}
+ const c=$("#fc").value,sz=$("#fz").value.split(/[,،]/).map(x=>x.trim()).filter(Boolean),v={n,c,p:Math.max(0,+$("#fp").value||0),o:Math.max(0,+$("#fo").value||0),st:Math.max(0,+$("#fs").value||0),hide:$("#fh").checked,img:cur.img,e:catOf(c).e||"✨"},id=cur.id;
+ mutate(()=>{const put=x=>{Object.assign(x,v);if(sz.length)x.sz=sz;else delete x.sz};
+  if(id&&id<=100)put(D.e[id]=D.e[id]||{});else if(id){const x=D.a.find(y=>y.id==id);if(x)put(x)}else{const x={id:Math.max(100,...D.a.map(y=>+y.id))+1,g:["#f6e6c4","#e9cf94"]};put(x);D.a.push(x)}})}
+/* الأقسام */
+const vC=()=>`<div class="cd" style="color:var(--mu)">غيّري اسم القسم أو رمزه أو مقاساته، أو أضيفي قسم جديد. المقاسات مفصولة بفاصلة. تغيير الاسم بينقل منتجات القسم تلقائيًا.</div>${D.cats.map((c,i)=>`<div class="cd cr" data-o="${esc(c.n)}"><div class="row"><input class="ce" style="max-width:64px;text-align:center" value="${esc(c.e)}"><input class="cn" value="${esc(c.n)}"></div><label>المقاسات<input class="cs" value="${esc((c.sz||[]).join("، "))}" placeholder="مثال: S، M، L"></label><div class="row" style="margin-top:8px"><button class="b" data-a="cu" data-i="${i}">↑</button><button class="b" data-a="cd" data-i="${i}">↓</button><button class="b" data-a="cx" data-i="${i}">حذف</button></div><small style="color:var(--mu)">${prods().filter(p=>p.c===c.n).length} منتج</small></div>`).join("")}<button class="b w" data-a="cn">+ قسم جديد</button><button class="b g w" data-a="cs">حفظ الأقسام</button>`;
+function readCats(){return[...document.querySelectorAll(".cr")].map(r=>({o:r.dataset.o,n:r.querySelector(".cn").value.trim(),e:r.querySelector(".ce").value.trim()||"✨",sz:r.querySelector(".cs").value.split(/[,،]/).map(x=>x.trim()).filter(Boolean)}))}
+function saveC(list){const nc=list||readCats();if(nc.some(c=>!c.n)){toast("اسم القسم مطلوب");return}if(new Set(nc.map(c=>c.n)).size!==nc.length){toast("فيه اسم قسم مكرر");return}
+ mutate(()=>{const ren={};nc.forEach(c=>{if(c.o&&c.o!==c.n)ren[c.o]=c.n});const em=Object.fromEntries(nc.map(c=>[c.n,c.e]));
+  BASE.forEach(([id,,c])=>{const x=D.e[id]=D.e[id]||{},cc=ren[x.c||c]||x.c||c;x.c=cc;x.e=em[cc]||x.e});D.a.forEach(p=>{p.c=ren[p.c]||p.c;p.e=em[p.c]||p.e});D.cats=nc.map(({n,e,sz})=>({n,e,sz}))})}
+/* الطلبات */
+const tpl=()=>Object.assign({},TPL0,JSON.parse(localStorage.getItem("velora-wa-tpl")||"{}")),site=()=>location.href.split("?")[0].replace(/admin\.html.*$/,"");
+const fill=(t,o)=>t.replace(/{name}/g,o.name.split(" ")[0]).replace(/{no}/g,o.no).replace(/{total}/g,fmt(o.total)).replace(/{link}/g,site()+"?track="+o.no).replace(/{site}/g,site());
+const vO=()=>`<button class="b w" data-a="rf">↻ تحديث</button>`+(OR.map(o=>`<div class="cd"><b>${esc(o.no)}</b> · ${esc(o.name)} · ${esc(o.ph)}<br><small style="color:var(--mu)">${fmt(o.total)} · ${esc(o.gv)} · ${dt(o.ts)}<br>${esc(o.ad||"")}<br>${(o.items||[]).map(i=>esc(i.n)+(i.s?" ("+esc(i.s)+")":"")+" ×"+i.q).join("، ")}</small><select data-s="${o.no}">${ST.map((x,i)=>`<option value="${i}"${o.st===i?" selected":""}>${x}</option>`).join("")}<option value="-1"${o.st<0?" selected":""}>ملغي</option></select><div class="row" style="margin-top:8px;flex-wrap:wrap">${Object.keys(TN).map(k=>`<button class="b" data-a="w" data-k="${k}" data-no="${o.no}">${TN[k]}</button>`).join("")}</div></div>`).join("")||`<div class="cd">لا توجد طلبات بعد.</div>`);
+const vM=()=>{const T=tpl();return`<div class="cd" style="color:var(--mu)">قوالب رسائل واتساب. المتغيرات: {name} {no} {total} {link} {site}</div>`+Object.keys(TN).map(k=>`<label>${TN[k]}<textarea rows="4" data-t="${k}">${esc(T[k])}</textarea></label>`).join("")};
+/* التقارير والتقييمات */
+function vR(){const O=OR.filter(o=>o.st>=0),now=Date.now(),D1=864e5,sd=new Date().setHours(0,0,0,0),sum=a=>a.reduce((s,o)=>s+(+o.total),0),mk=t=>O.filter(o=>o.ts>=t);
+ const bars=[...Array(7)].map((_,i)=>{const s=sd-(6-i)*D1;return{l:new Date(s).toLocaleDateString("ar-EG",{weekday:"short"}),v:sum(O.filter(o=>o.ts>=s&&o.ts<s+D1))}}),mx=Math.max(1,...bars.map(b=>b.v)),tp={};
+ O.forEach(o=>(o.items||[]).forEach(i=>{const t=tp[i.id]=tp[i.id]||{n:i.n,q:0,v:0};t.q+=i.q;t.v+=i.q*i.p}));
+ const top=Object.values(tp).sort((a,b)=>b.q-a.q).slice(0,5),low=prods().filter(p=>!p.hide&&p.st<=3).sort((a,b)=>a.st-b.st);
+ return`<div class="gr"><div class="cd">اليوم<strong>${fmt(sum(mk(sd)))}</strong></div><div class="cd">7 أيام<strong>${fmt(sum(mk(now-7*D1)))}</strong></div><div class="cd">30 يوم<strong>${fmt(sum(mk(now-30*D1)))}</strong></div><div class="cd">متوسط الطلب<strong>${fmt(O.length?sum(O)/O.length:0)}</strong></div></div><div class="bars">${bars.map(b=>`<div><i style="height:${Math.round(b.v/mx*88)}px"></i>${b.l}</div>`).join("")}</div>
+ <h3>🏆 الأكثر مبيعًا</h3>${top.map(t=>`<div class="cd">${esc(t.n)}<br><small>${t.q} قطعة · ${fmt(t.v)}</small></div>`).join("")||`<div class="cd">لا بيانات بعد.</div>`}<h3>⚠️ مخزون منخفض</h3>${low.map(p=>`<div class="cd">${esc(p.n)} — <span class="bad">${p.st<1?"نفد":"متبقي "+p.st}</span></div>`).join("")||`<div class="cd">كل المنتجات بكمية كافية.</div>`}`}
+const vV=()=>`<button class="b w" data-a="rf">↻ تحديث</button>`+(RR.map(r=>{const p=prods().find(x=>x.id==r.pid);return`<div class="cd">${esc(p?p.n:"")} · <b>${esc(r.name)}</b> <span style="color:var(--g)">${"★".repeat(r.r)}</span>${r.v?" ✓ موثّقة":""}<br><small style="color:var(--mu)">${esc(r.t)}</small>${r.img?`<br><img class="th" src="${r.img}" alt="">`:""}<div class="row" style="margin-top:8px"><button class="b${r.ap?"":" g"}" data-a="ra" data-id="${r.id}">${r.ap?"إلغاء الاعتماد":"اعتماد"}</button><button class="b" data-a="rd" data-id="${r.id}">حذف</button></div></div>`}).join("")||`<div class="cd">لا توجد تقييمات.</div>`);
+/* الأحداث */
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,id=b.dataset.id;
+ if(a==="in"){try{tok=await api("/auth/v1/token?grant_type=password",{m:"POST",b:{email:$("#le").value.trim(),password:$("#lw").value}});sessionStorage.setItem("velora-sbt",j(tok));start()}catch(x){toast("الإيميل أو كلمة المرور غير صحيحة")}}
+ else if(a==="out"){tok=null;sessionStorage.removeItem("velora-sbt");boot()}
+ else if(a==="tab"){tab=b.dataset.k;render()}
+ else if(a==="ep")edit(+id);else if(a==="x")$("#sh").remove();else if(a==="sp")saveP();
+ else if(a==="dp"){if(confirm("حذف المنتج؟"))mutate(()=>{D.a=D.a.filter(x=>x.id!=cur.id)})}
+ else if(a==="ri"){cur.img.splice(+b.dataset.i,1);imgs()}else if(a==="mi"){const i=+b.dataset.i;cur.img.unshift(...cur.img.splice(i,1));imgs()}
+ else if(a==="cn"){const l=readCats();l.push({o:"",n:"قسم جديد",e:"✨",sz:[]});D.cats=l.map(({n,e,sz})=>({n,e,sz}));D.cats.forEach((c,i)=>c.o=l[i].o);$("#v").innerHTML=vC().replace(/data-o="قسم جديد"/,'data-o=""')}
+ else if(a==="cs")saveC();
+ else if(a==="cu"||a==="cd"){const l=readCats(),i=+b.dataset.i,k=a==="cu"?i-1:i+1;if(k<0||k>=l.length)return;[l[i],l[k]]=[l[k],l[i]];saveC(l)}
+ else if(a==="cx"){const l=readCats(),i=+b.dataset.i,n=l[i].o||l[i].n;if(prods().some(p=>p.c===n)){toast("انقلي منتجات القسم لقسم تاني الأول");return}if(confirm("حذف القسم؟")){l.splice(i,1);saveC(l)}}
+ else if(a==="rf"){try{[OR,RR]=await Promise.all([api("/rest/v1/orders?select=*&order=ts.desc&limit=300"),api("/rest/v1/reviews?select=*&order=ts.desc&limit=200")]);render();toast("تم التحديث")}catch(x){toast("تعذر التحديث")}}
+ else if(a==="w"){const o=OR.find(x=>x.no===b.dataset.no),k=b.dataset.k,ix={conf:1,ship:2,deliv:3}[k];if(ix!=null&&o.st<ix){o.st=ix;o.up=Date.now();api("/rest/v1/orders?no=eq."+o.no,{m:"PATCH",h:MIN,b:{st:o.st,up:o.up}}).catch(()=>toast("تعذر تحديث الحالة"))}
+  const link="https://wa.me/2"+nd(o.ph).replace(/\D/g,"")+"?text="+encodeURIComponent(fill(tpl()[k],o)),a2=document.createElement("a");a2.href=link;a2.target="_blank";a2.rel="noopener";document.body.appendChild(a2);a2.click();a2.remove();render()}
+ else if(a==="ra"){const r=RR.find(x=>x.id===id);r.ap=!r.ap;api("/rest/v1/reviews?id=eq."+id,{m:"PATCH",h:MIN,b:{ap:r.ap}}).catch(()=>toast("تعذر الحفظ"));render()}
+ else if(a==="rd"&&confirm("حذف التقييم؟")){api("/rest/v1/reviews?id=eq."+id,{m:"DELETE",h:MIN}).then(()=>{RR=RR.filter(x=>x.id!==id);render()}).catch(()=>toast("تعذر الحذف"))}
+});
+document.addEventListener("change",async e=>{const s=e.target;
+ if(s.id==="sf")pList();
+ else if(s.dataset.s){const o=OR.find(x=>x.no===s.dataset.s);o.st=+s.value;o.up=Date.now();api("/rest/v1/orders?no=eq."+o.no,{m:"PATCH",h:MIN,b:{st:o.st,up:o.up}}).then(()=>toast("تم تحديث الحالة")).catch(()=>toast("تعذر التحديث"))}
+ else if(s.dataset.t){const t=JSON.parse(localStorage.getItem("velora-wa-tpl")||"{}");t[s.dataset.t]=s.value;localStorage.setItem("velora-wa-tpl",j(t));toast("تم حفظ القالب")}
+ else if(s.id==="ff"){for(const f of s.files){if(cur.img.length>=5)break;const d=await shrink(f);if(d)cur.img.push(d)}imgs();s.value=""}});
+document.addEventListener("input",e=>{if(e.target.id==="sq")pList()});
+boot();
+})();
+</script></body></html>
